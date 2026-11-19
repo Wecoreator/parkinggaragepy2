@@ -34,6 +34,11 @@ class ParkingGarage:
         GPIO.setup(self.INFRARED_PIN2, GPIO.IN)
         GPIO.setup(self.INFRARED_PIN3, GPIO.IN)
 
+        GPIO.setup(self.SERVO_PIN, GPIO.OUT)
+        self.servo = GPIO.PWM(self.SERVO_PIN, 50)
+        self.servo.start(5)
+        self.door_open = False
+
 
     def check_occupancy(self, pin: int) -> bool:
         if pin not in (self.INFRARED_PIN1, self.INFRARED_PIN2, self.INFRARED_PIN3):
@@ -62,12 +67,12 @@ class ParkingGarage:
         return 2.5*hours_ceil
 
     def open_garage_door(self) -> None:
-        # See User Story #4
-        pass
+        self.servo.ChangeDutyCycle(10)
+        self.door_open = True
 
     def close_garage_door(self) -> None:
-        # See User Story #4
-        pass
+        self.servo.ChangeDutyCycle(10)
+        self.door_open = False
 
     def turn_on_red_light(self) -> None:
         # See User Story #5

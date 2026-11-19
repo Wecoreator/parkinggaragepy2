@@ -98,3 +98,31 @@ class TestParkingGarage(TestCase):
         mock_rtc.return_value = end
 
         self.assertEqual(garage.calculate_parking_fee(start), 7.5)
+
+    @patch.object(GPIO, "setup")
+    @patch.object(GPIO.PWM, "__init__", return_value=None)
+    @patch.object(GPIO.PWM, "start")
+    def test_servo(self, mock_start: MagicMock, mock_pwn: MagicMock, mock_setup: MagicMock):
+        garage = ParkingGarage()
+        mock_setup.assert_any_call(ParkingGarage.SERVO_PIN, GPIO.OUT)
+        mock_pwn.assert_any_call(ParkingGarage.SERVO_PIN, 50)
+        mock_start.assert_any_call(5)
+        self.assertFalse(garage.door_open)
+
+    @patch.object(GPIO.PWM, "ChangeDutyCycle")
+    def test_open_garage_door(self, mock_change: MagicMock):
+        garage = ParkingGarage()
+        garage.door_open = False
+        garage.open_garage_door()
+        mock_change.assert_called_once_with(10)
+        self.assertTrue(garage.door_open)
+
+    @patch.object(GPIO.PWM, "ChangeDutyCycle")
+    def test_close_garage_door(self, mock_change: MagicMock):
+        garage = ParkingGarage()
+        garage.door_open = True
+
+        garage.close_garage_door()
+
+        mock_change.assert_called_once_with(10)
+        self.assertFalse(garage.door_open)
