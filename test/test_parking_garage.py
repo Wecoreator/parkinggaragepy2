@@ -43,4 +43,29 @@ class TestParkingGarage(TestCase):
     @patch.object(GPIO, "input")
     def test_check_occupancy_cnt_0(self, mock_input: MagicMock):
         garage = ParkingGarage()
-        self.assertIs(garage.get_number_occupied_spots(), 0)
+        mock_input.side_effect = [True, True, True]
+
+        self.assertEqual(garage.get_number_occupied_spots(), 0)
+
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_cnt_1(self, mock_input: MagicMock):
+        garage = ParkingGarage()
+        mock_input.side_effect = [False, True, True]
+
+        self.assertEqual(garage.get_number_occupied_spots(), 1)
+
+
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_cnt_2(self, mock_input: MagicMock):
+        garage = ParkingGarage()
+        mock_input.side_effect = [False, False, True]
+
+        self.assertEqual(garage.get_number_occupied_spots(), 2)
+
+
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_cnt_3(self, mock_input: MagicMock):
+        garage = ParkingGarage()
+        mock_input.side_effect = [False, False, False]
+
+        self.assertEqual(garage.get_number_occupied_spots(), 3)

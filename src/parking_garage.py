@@ -43,12 +43,11 @@ class ParkingGarage:
 
     def get_number_occupied_spots(self) -> int:
         cnt = 0
-        if self.check_occupancy(self.INFRARED_PIN1):
-            cnt+=1
-        if self.check_occupancy(self.INFRARED_PIN2):
-            cnt+=1
-        if self.check_occupancy(self.INFRARED_PIN3):
-            cnt+=1
+
+        for pin in [self.INFRARED_PIN1, self.INFRARED_PIN2, self.INFRARED_PIN3]:
+            if self.check_occupancy(pin):
+                cnt+=1
+
         # See User Story #2
         return cnt
 
