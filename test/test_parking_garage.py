@@ -1,4 +1,5 @@
 from datetime import datetime
+from gc import garbage
 from unittest import TestCase
 from unittest.mock import patch
 from unittest.mock import MagicMock
@@ -69,3 +70,31 @@ class TestParkingGarage(TestCase):
         mock_input.side_effect = [False, False, False]
 
         self.assertEqual(garage.get_number_occupied_spots(), 3)
+
+    @patch.object(SDL_DS3231, "__init__", return_value = None)
+    def test_rtc_config(self, mock_rtc: MagicMock):
+        garage = ParkingGarage()
+        mock_rtc.assert_called_once()
+
+    @patch.object(SDL_DS3231, "read_datetime")
+    def test_fee_2h(self, mock_rtc: MagicMock):
+        garage = ParkingGarage()
+
+        start = datetime(2026, 11, 19, 10, 0, 0)
+        end = datetime(2026, 11, 19, 12, 0, 0)
+
+        mock_rtc.return_value = end
+
+        self.assertEqual(garage.calculate_parking_fee(start), 5.0)
+
+
+    @patch.object(SDL_DS3231, "read_datetime")
+    def test_fee_2dot5h(self, mock_rtc: MagicMock):
+        garage = ParkingGarage()
+
+        start = datetime(2026, 11, 19, 10, 0, 0)
+        end = datetime(2026, 11, 19, 12, 30, 0)
+
+        mock_rtc.return_value = end
+
+        self.assertEqual(garage.calculate_parking_fee(start), 7.5)
