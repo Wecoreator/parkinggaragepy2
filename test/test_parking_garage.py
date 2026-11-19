@@ -20,18 +20,27 @@ class TestParkingGarage(TestCase):
 
     @patch.object(GPIO, "input")
     def test_check_occupancy_high(self, mock_input: MagicMock):
-        mock_input.return_value = GPIO.HIGH
+        mock_input.return_value = True
+
+        garage = ParkingGarage()
+
+        self.assertFalse(garage.check_occupancy(11))
+        mock_input.assert_called_once_with(11)
+
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_low(self, mock_input: MagicMock):
+        mock_input.return_value = False
 
         garage = ParkingGarage()
 
         self.assertTrue(garage.check_occupancy(11))
         mock_input.assert_called_once_with(11)
 
-    @patch.object(GPIO, "input")
-    def test_check_occupancy_low(self, mock_input: MagicMock):
-        mock_input.return_value = GPIO.LOW
-
+    def test_check_occupancy_rasies_error(self):
         garage = ParkingGarage()
+        self.assertRaises(ParkingGarageError, garage.check_occupancy, garage.SERVO_PIN)
 
-        self.assertFalse(garage.check_occupancy(11))
-        mock_input.assert_called_once_with(11)
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_cnt_0(self, mock_input: MagicMock):
+        garage = ParkingGarage()
+        self.assertIs(garage.get_number_occupied_spots(), 0)

@@ -35,17 +35,22 @@ class ParkingGarage:
 
 
     def check_occupancy(self, pin: int) -> bool:
+        if pin not in (self.INFRARED_PIN1, self.INFRARED_PIN2, self.INFRARED_PIN3):
+            raise ParkingGarageError
 
-        spot = GPIO.input(pin)
-        if spot == GPIO.HIGH:
-            return True
-        else:
-            return False
+        return not GPIO.input(pin)
         # See User Story #1
 
     def get_number_occupied_spots(self) -> int:
+        cnt = 0
+        if self.check_occupancy(self.INFRARED_PIN1):
+            cnt+=1
+        if self.check_occupancy(self.INFRARED_PIN2):
+            cnt+=1
+        if self.check_occupancy(self.INFRARED_PIN3):
+            cnt+=1
         # See User Story #2
-        pass
+        return cnt
 
     def calculate_parking_fee(self, entry_time: datetime) -> float:
         # See User Story #3
