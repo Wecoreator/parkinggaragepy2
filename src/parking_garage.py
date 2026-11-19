@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import truediv
 
 try:
     import RPi.GPIO as GPIO
@@ -28,10 +29,19 @@ class ParkingGarage:
         self.door_open = None # Variable not initialize yet (see User Story #4)
         self.red_light_on = None # Variable not initialize yet (see User Story #5)
 
+        GPIO.setup(self.INFRARED_PIN1, GPIO.IN)
+        GPIO.setup(self.INFRARED_PIN2, GPIO.IN)
+        GPIO.setup(self.INFRARED_PIN3, GPIO.IN)
+
 
     def check_occupancy(self, pin: int) -> bool:
+
+        spot = GPIO.input(pin)
+        if spot == GPIO.HIGH:
+            return True
+        else:
+            return False
         # See User Story #1
-        pass
 
     def get_number_occupied_spots(self) -> int:
         # See User Story #2

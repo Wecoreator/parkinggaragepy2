@@ -10,7 +10,28 @@ from src.parking_garage import ParkingGarageError
 
 class TestParkingGarage(TestCase):
 
+    @patch.object(GPIO, "setup")
+    def test_setup(self, mock_setup: MagicMock):
+        garage = ParkingGarage()
+
+        mock_setup.assert_any_call(garage.INFRARED_PIN1, GPIO.IN)
+        mock_setup.assert_any_call(garage.INFRARED_PIN2, GPIO.IN)
+        mock_setup.assert_any_call(garage.INFRARED_PIN3, GPIO.IN)
+
     @patch.object(GPIO, "input")
-    def test_something(self, mock_input: MagicMock):
-        # This is an example of test where I want to mock the GPIO.input() function
-        pass
+    def test_check_occupancy_high(self, mock_input: MagicMock):
+        mock_input.return_value = GPIO.HIGH
+
+        garage = ParkingGarage()
+
+        self.assertTrue(garage.check_occupancy(11))
+        mock_input.assert_called_once_with(11)
+
+    @patch.object(GPIO, "input")
+    def test_check_occupancy_low(self, mock_input: MagicMock):
+        mock_input.return_value = GPIO.LOW
+
+        garage = ParkingGarage()
+
+        self.assertFalse(garage.check_occupancy(11))
+        mock_input.assert_called_once_with(11)
